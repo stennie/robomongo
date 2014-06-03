@@ -4,7 +4,7 @@
 TEMPLATE = lib
 TARGET = qscintillaplugin
 
-CONFIG += release plugin
+CONFIG += release plugin qscintilla2
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += designer
@@ -13,7 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 macx {
-    QMAKE_POST_LINK = install_name_tool -change libqscintilla2.9.dylib $$[QT_INSTALL_LIBS]/libqscintilla2.9.dylib $(TARGET)
+    QMAKE_POST_LINK = install_name_tool -change libqscintilla2.11.dylib $$[QT_INSTALL_LIBS]/libqscintilla2.11.dylib $(TARGET)
 }
 
 HEADERS = qscintillaplugin.h
@@ -21,5 +21,3 @@ SOURCES = qscintillaplugin.cpp
 
 target.path = $$[QT_INSTALL_PLUGINS]/designer
 INSTALLS += target
-
-LIBS += -L$$[QT_INSTALL_LIBS] -lqscintilla2

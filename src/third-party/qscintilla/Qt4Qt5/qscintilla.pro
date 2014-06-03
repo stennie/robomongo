@@ -1,6 +1,6 @@
 # The project file for the QScintilla library.
 #
-# Copyright (c) 2012 Riverbank Computing Limited <info@riverbankcomputing.com>
+# Copyright (c) 2014 Riverbank Computing Limited <info@riverbankcomputing.com>
 # 
 # This file is part of QScintilla.
 # 
@@ -23,20 +23,28 @@
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 
-# This must be kept in sync with configure.py, Qt4Qt5/application.pro and
-# Qt4Qt5/designer.pro.
-!win32:VERSION = 9.0.2
+# This must be kept in sync with Python/configure.py, Python/configure-old.py,
+# example-Qt4Qt5/application.pro and designer-Qt4Qt5/designer.pro.
+!win32:VERSION = 11.1.0
 
 TEMPLATE = lib
 TARGET = qscintilla2
-CONFIG += qt warn_off dll thread
-CONFIG  -= debug_and_release
-INCLUDEPATH = . ../include ../lexlib ../src
-DEFINES = QSCINTILLA_MAKE_DLL QT SCI_LEXER
+CONFIG += qt warn_off release thread exceptions
+INCLUDEPATH += . ../include ../lexlib ../src
+
+DEFINES += QSCINTILLA_MAKE_DLL SCINTILLA_QT SCI_LEXER
+greaterThan(QT_MAJOR_VERSION, 3) {
+    CONFIG(staticlib) {
+        DEFINES -= QSCINTILLA_MAKE_DLL
+    }
+}
 
 greaterThan(QT_MAJOR_VERSION, 4) {
-	QT += widgets
-	QT += printsupport
+	QT += widgets printsupport
+
+    greaterThan(QT_MINOR_VERSION, 1) {
+	    macx:QT += macextras
+    }
 }
 
 # Comment this in if you want the internal Scintilla classes to be placed in a
@@ -70,6 +78,12 @@ isEmpty(qsci.path) {
 
 INSTALLS += header trans qsci target
 
+greaterThan(QT_MAJOR_VERSION, 3) {
+    features.path = $$[QT_INSTALL_DATA]/mkspecs/features
+    features.files = $$PWD/features/qscintilla2.prf
+    INSTALLS += features
+}
+
 HEADERS = \
 	./Qsci/qsciglobal.h \
 	./Qsci/qsciscintilla.h \
@@ -80,6 +94,7 @@ HEADERS = \
 	./Qsci/qscicommandset.h \
 	./Qsci/qscidocument.h \
 	./Qsci/qscilexer.h \
+	./Qsci/qscilexeravs.h \
 	./Qsci/qscilexerbash.h \
 	./Qsci/qscilexerbatch.h \
 	./Qsci/qscilexercmake.h \
@@ -102,6 +117,7 @@ HEADERS = \
 	./Qsci/qscilexerpascal.h \
 	./Qsci/qscilexerperl.h \
 	./Qsci/qscilexerpostscript.h \
+	./Qsci/qscilexerpo.h \
 	./Qsci/qscilexerpov.h \
 	./Qsci/qscilexerproperties.h \
 	./Qsci/qscilexerpython.h \
@@ -128,6 +144,7 @@ HEADERS = \
 	../include/Scintilla.h \
 	../include/ScintillaWidget.h \
 	../lexlib/Accessor.h \
+	../lexlib/CharacterCategory.h \
 	../lexlib/CharacterSet.h \
 	../lexlib/LexAccessor.h \
 	../lexlib/LexerBase.h \
@@ -137,9 +154,12 @@ HEADERS = \
 	../lexlib/OptionSet.h \
 	../lexlib/PropSetSimple.h \
 	../lexlib/StyleContext.h \
+	../lexlib/SubStyles.h \
 	../lexlib/WordList.h \
 	../src/AutoComplete.h \
 	../src/CallTip.h \
+	../src/CaseConvert.h \
+	../src/CaseFolder.h \
 	../src/Catalogue.h \
 	../src/CellBuffer.h \
 	../src/CharClassify.h \
@@ -161,7 +181,7 @@ HEADERS = \
 	../src/Selection.h \
 	../src/SplitVector.h \
 	../src/Style.h \
-	../src/SVector.h \
+	../src/UnicodeFromUTF8.h \
 	../src/UniConversion.h \
 	../src/ViewStyle.h \
 	../src/XPM.h
@@ -175,6 +195,7 @@ SOURCES = \
 	qscicommandset.cpp \
 	qscidocument.cpp \
 	qscilexer.cpp \
+	qscilexeravs.cpp \
 	qscilexerbash.cpp \
 	qscilexerbatch.cpp \
 	qscilexercmake.cpp \
@@ -197,6 +218,7 @@ SOURCES = \
 	qscilexerpascal.cpp \
 	qscilexerperl.cpp \
 	qscilexerpostscript.cpp \
+	qscilexerpo.cpp \
 	qscilexerpov.cpp \
 	qscilexerproperties.cpp \
 	qscilexerpython.cpp \
@@ -213,6 +235,8 @@ SOURCES = \
 	qsciprinter.cpp \
 	qscistyle.cpp \
 	qscistyledtext.cpp \
+    MacPasteboardMime.cpp \
+    InputMethod.cpp \
 	SciClasses.cpp \
 	ListBoxQt.cpp \
 	PlatQt.cpp \
@@ -255,6 +279,8 @@ SOURCES = \
 	../lexers/LexHTML.cpp \
 	../lexers/LexInno.cpp \
 	../lexers/LexKix.cpp \
+	../lexers/LexKVIrc.cpp \
+	../lexers/LexLaTex.cpp \
 	../lexers/LexLisp.cpp \
 	../lexers/LexLout.cpp \
 	../lexers/LexLua.cpp \
@@ -286,6 +312,7 @@ SOURCES = \
 	../lexers/LexR.cpp \
 	../lexers/LexRebol.cpp \
 	../lexers/LexRuby.cpp \
+	../lexers/LexRust.cpp \
 	../lexers/LexScriptol.cpp \
 	../lexers/LexSmalltalk.cpp \
 	../lexers/LexSML.cpp \
@@ -293,6 +320,7 @@ SOURCES = \
 	../lexers/LexSpecman.cpp \
 	../lexers/LexSpice.cpp \
 	../lexers/LexSQL.cpp \
+	../lexers/LexSTTXT.cpp \
 	../lexers/LexTACL.cpp \
 	../lexers/LexTADS3.cpp \
 	../lexers/LexTAL.cpp \
@@ -306,6 +334,7 @@ SOURCES = \
 	../lexers/LexVisualProlog.cpp \
 	../lexers/LexYAML.cpp \
 	../lexlib/Accessor.cpp \
+	../lexlib/CharacterCategory.cpp \
 	../lexlib/CharacterSet.cpp \
 	../lexlib/LexerBase.cpp \
 	../lexlib/LexerModule.cpp \
@@ -316,6 +345,8 @@ SOURCES = \
 	../lexlib/WordList.cpp \
 	../src/AutoComplete.cpp \
 	../src/CallTip.cpp \
+	../src/CaseConvert.cpp \
+	../src/CaseFolder.cpp \
 	../src/Catalogue.cpp \
 	../src/CellBuffer.cpp \
 	../src/CharClassify.cpp \
